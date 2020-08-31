@@ -26,6 +26,10 @@ server.use((req, res, next) => {
   next()
 })
 
+const runningVersion = require('./package.json').version
+server.get('/v', (req, res) => {
+  res.sendRaw(runningVersion)
+})
 server.get('/get', (req, res) => {
   res.json(200, JSON.parse(fs.readFileSync(currentStoreFilename).toString()))
 })
