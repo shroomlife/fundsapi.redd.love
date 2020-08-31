@@ -1,0 +1,30 @@
+{
+  "name": "fundsapi.redd.love",
+  "version": "1.0.0",
+  "description": "A simple wrapper for the receiving of the current funding values for Redd.",
+  "main": "index.js",
+  "repository": "git@github.com:shroomlife/funds.redd.love.git",
+  "author": "robin@redd.love",
+  "license": "MIT",
+  "private": false,
+  "devDependencies": {
+    "eslint": "^7.7.0",
+    "eslint-config-standard": "^14.1.1",
+    "eslint-plugin-import": "^2.22.0",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.1"
+  },
+  "dependencies": {
+    "axios": "^0.20.0",
+    "dotenv": "^8.2.0",
+    "human-readable-numbers": "^0.9.5",
+    "node-cron": "^2.0.3",
+    "restify": "^8.5.1",
+    "restify-cors-middleware": "^1.1.1"
+  },
+  "scripts": {
+    "start": "node index",
+    "dev": "nodemon index"
+  }
+}
