@@ -1,2 +1,14 @@
 /node_modules
 /src/store/*
+
+/.env
+/.env.sample
+
+/.eslintrc.js
+/.gitignore
+
+/docker-compose.yml
+/Dockerfile
+
+/nodemon.json
+/*.lock
