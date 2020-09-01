@@ -13,7 +13,8 @@ const priceStoreFilename = path.resolve(__dirname, 'store', 'price.json')
 const walletStoreFilename = path.resolve(__dirname, 'store', 'wallets.json')
 
 const cors = corsMiddleware({
-  origins: ['http://demo.mimosolutions.ca', 'https://redd.love']
+  origins: ['http://demo.mimosolutions.ca', 'https://redd.love'],
+  exposeHeaders: ['content-type', 'date']
 })
 
 const server = restify.createServer()
