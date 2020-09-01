@@ -63,41 +63,31 @@ const cacheCustomWallets = () => {
   // DevWalletTwo -> Ru6sDVdn4MhxXJauQ2GAJP4ozpPpmcDKdc (Core Dev Consolidation Wallet)
 
   return new Promise((resolve, reject) => {
-    fs.writeFile(walletStoreFilename, JSON.stringify({
-      DevWalletOne: 4270147.69341905,
-      DevWalletTwo: 213207.15619800
-    }), () => {
+    Promise.all([
+      axios({
+        url: 'http://www.tokenview.com:8088/address/rdd/Rmhzj2GptZxkKBMqbUL6VjFcX8npDneAXR/1/1'
+      }),
+      axios({
+        url: 'https://live.reddcoin.com/api/addr/Ru6sDVdn4MhxXJauQ2GAJP4ozpPpmcDKdc/?noTxList=1'
+      })
+    ]).then(([StakingAddress, OldDevAddress]) => {
+      const StakingAddressData = StakingAddress.data.data.shift()
+      const StakingAddressAmount = calculateTotal(StakingAddressData.spend, StakingAddressData.receive)
+      const OldAddressAmount = OldDevAddress.data.balance
+
+      fs.writeFileSync(walletStoreFilename, JSON.stringify({
+        DevWalletOne: StakingAddressAmount,
+        DevWalletTwo: OldAddressAmount
+      }))
+
       console.log(`ReddCoin Wallet Data written to store ${walletStoreFilename}`)
       resolve()
     })
   })
+}
 
-  // return new Promise((resolve, reject) => {
-  //   Promise.all([
-  //     axios({
-  //       data: {
-  //         method: 'getbalance',
-  //         params: [
-  //           'Redd Development Fund', 0, true
-  //         ]
-  //       },
-  //       ...defaultConfigRPC
-  //     })
-  //   ]).then(([DevAddressResponse]) => {
-  //     const DevAddressData = DevAddressResponse.data.result
-  //     // const StakeAddressData = StakeAddressResponse.data.result
-
-  //     //   fs.writeFile(walletStoreFilename, JSON.stringify({
-  //     //     DevWalletOne: 4270147.69341905,
-  //     //     DevWalletTwo: 413127.15619800
-  //     //   }), () => {
-  //     //     console.log(`ReddCoin Wallet Data written to store ${walletStoreFilename}`)
-  //     //     resolve()
-  //     //   })
-
-  //     console.log(DevAddressData)
-  //   })
-  // })
+const calculateTotal = (spend, receive) => {
+  return Math.abs(receive) - Math.abs(spend)
 }
 
 const updateStore = () => {
