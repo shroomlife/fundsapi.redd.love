@@ -1,6 +1,6 @@
 {
   "name": "fundsapi.redd.love",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "A simple wrapper for the receiving of the current funding values for Redd.",
   "main": "index.js",
   "repository": "git@github.com:shroomlife/fundsapi.redd.love.git",
