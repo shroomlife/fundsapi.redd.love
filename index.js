@@ -38,7 +38,7 @@ server.get('/get', (req, res) => {
 const getCurrentReccCoinToUSDPrice = () => {
   return new Promise((resolve, reject) => {
     axios({
-      url: 'https://api.coincap.io/v2/assets/reddcoin'
+      url: 'https://api.coincap.io/v2/assets/redd'
     }).then(response => {
       fs.writeFile(priceStoreFilename, JSON.stringify(response.data.data), () => {
         console.log(`ReddCoin Price Data written to store ${priceStoreFilename}`)
@@ -93,8 +93,12 @@ const calculateTotal = (spend, receive) => {
 
 const updateStore = () => {
   Promise.all([
-    getCurrentReccCoinToUSDPrice(),
-    cacheCustomWallets()
+    new Promise(resolve => {
+      getCurrentReccCoinToUSDPrice().then(resolve).catch(resolve)
+    }),
+    new Promise(resolve => {
+      cacheCustomWallets().then(resolve).catch(resolve)
+    })
   ]).then(() => {
     const priceData = JSON.parse(fs.readFileSync(priceStoreFilename))
     const walletData = JSON.parse(fs.readFileSync(walletStoreFilename))
