@@ -26,6 +26,8 @@
   "scripts": {
     "start": "node index",
     "dev": "nodemon index",
-    "build": "docker build . -t shroomlife/fundsapi.redd.love:latest && docker push shroomlife/fundsapi.redd.love:latest"
+    "build": "docker build . -t shroomlife/fundsapi.redd.love:latest",
+    "push": "docker push shroomlife/fundsapi.redd.love:latest",
+    "deploy": "docker build . -t shroomlife/fundsapi.redd.love:latest && docker push shroomlife/fundsapi.redd.love:latest"
   }
 }
