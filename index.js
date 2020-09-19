@@ -6,6 +6,7 @@ const fs = require('fs')
 const path = require('path')
 const HRNumbers = require('human-readable-numbers')
 const corsMiddleware = require('restify-cors-middleware')
+const moment = require('moment')
 
 // new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(number)
 const currentStoreFilename = path.resolve(__dirname, 'store', 'current.json')
@@ -83,7 +84,7 @@ const cacheCustomWallets = () => {
 
       console.log(`ReddCoin Wallet Data written to store ${walletStoreFilename}`)
       resolve()
-    })
+    }).catch(reject)
   })
 }
 
@@ -94,10 +95,16 @@ const calculateTotal = (spend, receive) => {
 const updateStore = () => {
   Promise.all([
     new Promise(resolve => {
-      getCurrentReccCoinToUSDPrice().then(resolve).catch(resolve)
+      getCurrentReccCoinToUSDPrice().then(resolve).catch(error => {
+        console.log('Error @ getCurrentReccCoinToUSDPrice', error)
+        resolve()
+      })
     }),
     new Promise(resolve => {
-      cacheCustomWallets().then(resolve).catch(resolve)
+      cacheCustomWallets().then(resolve).catch(error => {
+        console.log('Error @ cacheCustomWallets', error)
+        resolve()
+      })
     })
   ]).then(() => {
     const priceData = JSON.parse(fs.readFileSync(priceStoreFilename))
@@ -111,7 +118,8 @@ const updateStore = () => {
       DevWalletTwo: {
         USD: new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(walletData.DevWalletTwo * priceData.priceUsd),
         RDD: `(${HRNumbers.toHumanString(walletData.DevWalletTwo)} RDD)`
-      }
+      },
+      LastUpdated: moment().toISOString()
     }), () => {
       console.log(`Redd Funding Data written to store ${currentStoreFilename}`)
     })
