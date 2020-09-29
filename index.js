@@ -14,7 +14,7 @@ const priceStoreFilename = path.resolve(__dirname, 'store', 'price.json')
 const walletStoreFilename = path.resolve(__dirname, 'store', 'wallets.json')
 
 const cors = corsMiddleware({
-  origins: ['http://demo.mimosolutions.ca', 'https://redd.love'],
+  origins: ['https://redd.love', 'https://staging.redd.love'],
   exposeHeaders: ['content-type', 'date']
 })
 
