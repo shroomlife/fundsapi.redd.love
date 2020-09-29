@@ -63,6 +63,9 @@ const getCurrentReccCoinToUSDPrice = () => {
 const DevWalletOneAddress = 'Rmhzj2GptZxkKBMqbUL6VjFcX8npDneAXR'
 const DevWalletTwoAddress = 'Ru6sDVdn4MhxXJauQ2GAJP4ozpPpmcDKdc'
 
+const DevWalletOneAddressCheckUrl = `http://www.tokenview.com:8088/address/rdd/${DevWalletOneAddress}/1/1`
+const DevWalletTwoAddressCheckUrl = `https://live.reddcoin.com/api/addr/${DevWalletTwoAddress}/?noTxList=1`
+
 const cacheCustomWallets = () => {
   // DevWalletOne -> Rmhzj2GptZxkKBMqbUL6VjFcX8npDneAXR (PoSV v2 Dev Generation Address)
   // DevWalletTwo -> Ru6sDVdn4MhxXJauQ2GAJP4ozpPpmcDKdc (Core Dev Consolidation Wallet)
@@ -70,10 +73,10 @@ const cacheCustomWallets = () => {
   return new Promise((resolve, reject) => {
     Promise.all([
       axios({
-        url: `http://www.tokenview.com:8088/address/rdd/${DevWalletOneAddress}/1/1`
+        url: DevWalletOneAddressCheckUrl
       }),
       axios({
-        url: `https://live.reddcoin.com/api/addr/${DevWalletTwoAddress}/?noTxList=1`
+        url: DevWalletTwoAddressCheckUrl
       })
     ]).then(([StakingAddress, OldDevAddress]) => {
       const StakingAddressData = StakingAddress.data.data.shift()
@@ -118,13 +121,15 @@ const updateStore = () => {
         Address: DevWalletOneAddress,
         USD: new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(walletData.DevWalletOne * priceData.priceUsd),
         RDD: `(${HRNumbers.toHumanString(walletData.DevWalletOne)} RDD)`,
-        RDDTotal: walletData.DevWalletOne
+        RDDTotal: walletData.DevWalletOne,
+        Source: DevWalletOneAddressCheckUrl
       },
       DevWalletTwo: {
         Address: DevWalletTwoAddress,
         USD: new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(walletData.DevWalletTwo * priceData.priceUsd),
         RDD: `(${HRNumbers.toHumanString(walletData.DevWalletTwo)} RDD)`,
-        RDDTotal: walletData.DevWalletTwo
+        RDDTotal: walletData.DevWalletTwo,
+        Source: DevWalletTwoAddressCheckUrl
       },
       LastUpdated: moment().toISOString()
     }), () => {
