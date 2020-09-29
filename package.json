@@ -1,19 +1,18 @@
 {
   "name": "fundsapi.redd.love",
   "version": "1.2.5",
-  "description": "A simple wrapper for the receiving of the current funding values for Redd.",
-  "main": "index.js",
-  "repository": "git@github.com:shroomlife/fundsapi.redd.love.git",
-  "author": "robin@redd.love",
-  "license": "MIT",
   "private": false,
-  "devDependencies": {
-    "eslint": "^7.7.0",
-    "eslint-config-standard": "^14.1.1",
-    "eslint-plugin-import": "^2.22.0",
-    "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-promise": "^4.2.1",
-    "eslint-plugin-standard": "^4.0.1"
+  "description": "A simple wrapper for the receiving of the current funding values for Redd.",
+  "repository": "git@github.com:shroomlife/fundsapi.redd.love.git",
+  "license": "MIT",
+  "author": "robin@redd.love",
+  "main": "index.js",
+  "scripts": {
+    "build": "docker build . -t shroomlife/fundsapi.redd.love:latest",
+    "deploy": "docker build . -t shroomlife/fundsapi.redd.love:latest && docker push shroomlife/fundsapi.redd.love:latest",
+    "dev": "nodemon index",
+    "push": "docker push shroomlife/fundsapi.redd.love:latest",
+    "start": "node index"
   },
   "dependencies": {
     "axios": "^0.20.0",
@@ -24,11 +23,12 @@
     "restify": "^8.5.1",
     "restify-cors-middleware": "^1.1.1"
   },
-  "scripts": {
-    "start": "node index",
-    "dev": "nodemon index",
-    "build": "docker build . -t shroomlife/fundsapi.redd.love:latest",
-    "push": "docker push shroomlife/fundsapi.redd.love:latest",
-    "deploy": "docker build . -t shroomlife/fundsapi.redd.love:latest && docker push shroomlife/fundsapi.redd.love:latest"
+  "devDependencies": {
+    "eslint": "^7.7.0",
+    "eslint-config-standard": "^14.1.1",
+    "eslint-plugin-import": "^2.22.0",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.1"
   }
 }
