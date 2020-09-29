@@ -1,4 +1,4 @@
-FROM node:latest
+FROM node:stretch
 WORKDIR /usr/src/app
 COPY . .
 RUN npm install --only=production
