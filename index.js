@@ -60,6 +60,9 @@ const getCurrentReccCoinToUSDPrice = () => {
 //   }
 // }
 
+const DevWalletOneAddress = 'Rmhzj2GptZxkKBMqbUL6VjFcX8npDneAXR'
+const DevWalletTwoAddress = 'Ru6sDVdn4MhxXJauQ2GAJP4ozpPpmcDKdc'
+
 const cacheCustomWallets = () => {
   // DevWalletOne -> Rmhzj2GptZxkKBMqbUL6VjFcX8npDneAXR (PoSV v2 Dev Generation Address)
   // DevWalletTwo -> Ru6sDVdn4MhxXJauQ2GAJP4ozpPpmcDKdc (Core Dev Consolidation Wallet)
@@ -67,10 +70,10 @@ const cacheCustomWallets = () => {
   return new Promise((resolve, reject) => {
     Promise.all([
       axios({
-        url: 'http://www.tokenview.com:8088/address/rdd/Rmhzj2GptZxkKBMqbUL6VjFcX8npDneAXR/1/1'
+        url: `http://www.tokenview.com:8088/address/rdd/${DevWalletOneAddress}/1/1`
       }),
       axios({
-        url: 'https://live.reddcoin.com/api/addr/Ru6sDVdn4MhxXJauQ2GAJP4ozpPpmcDKdc/?noTxList=1'
+        url: `https://live.reddcoin.com/api/addr/${DevWalletTwoAddress}/?noTxList=1`
       })
     ]).then(([StakingAddress, OldDevAddress]) => {
       const StakingAddressData = StakingAddress.data.data.shift()
@@ -112,12 +115,16 @@ const updateStore = () => {
 
     fs.writeFile(currentStoreFilename, JSON.stringify({
       DevWalletOne: {
+        Address: DevWalletOneAddress,
         USD: new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(walletData.DevWalletOne * priceData.priceUsd),
-        RDD: `(${HRNumbers.toHumanString(walletData.DevWalletOne)} RDD)`
+        RDD: `(${HRNumbers.toHumanString(walletData.DevWalletOne)} RDD)`,
+        RDDTotal: walletData.DevWalletOne
       },
       DevWalletTwo: {
+        Address: DevWalletTwoAddress,
         USD: new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(walletData.DevWalletTwo * priceData.priceUsd),
-        RDD: `(${HRNumbers.toHumanString(walletData.DevWalletTwo)} RDD)`
+        RDD: `(${HRNumbers.toHumanString(walletData.DevWalletTwo)} RDD)`,
+        RDDTotal: walletData.DevWalletTwo
       },
       LastUpdated: moment().toISOString()
     }), () => {
