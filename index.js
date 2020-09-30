@@ -62,9 +62,11 @@ const getCurrentReccCoinToUSDPrice = () => {
 
 const DevWalletOneAddress = 'Rmhzj2GptZxkKBMqbUL6VjFcX8npDneAXR'
 const DevWalletTwoAddress = 'Ru6sDVdn4MhxXJauQ2GAJP4ozpPpmcDKdc'
+const DevWalletThreeAddress = 'Recrcq8moZjbEHVoJx6JiQ2mfZkQnktvnf'
 
 const DevWalletOneAddressCheckUrl = `http://www.tokenview.com:8088/address/rdd/${DevWalletOneAddress}/1/1`
 const DevWalletTwoAddressCheckUrl = `https://live.reddcoin.com/api/addr/${DevWalletTwoAddress}/?noTxList=1`
+const DevWalletThreeAddressCheckUrl = `https://live.reddcoin.com/api/addr/${DevWalletThreeAddress}/?noTxList=1`
 
 const cacheCustomWallets = () => {
   // DevWalletOne -> Rmhzj2GptZxkKBMqbUL6VjFcX8npDneAXR (PoSV v2 Dev Generation Address)
@@ -77,15 +79,20 @@ const cacheCustomWallets = () => {
       }),
       axios({
         url: DevWalletTwoAddressCheckUrl
+      }),
+      axios({
+        url: DevWalletThreeAddressCheckUrl
       })
-    ]).then(([StakingAddress, OldDevAddress]) => {
+    ]).then(([StakingAddress, OldDevAddress, CharityAddress]) => {
       const StakingAddressData = StakingAddress.data.data.shift()
       const StakingAddressAmount = calculateTotal(StakingAddressData.spend, StakingAddressData.receive)
       const OldAddressAmount = OldDevAddress.data.balance
+      const CharityAddressAmount = CharityAddress.data.balance
 
       fs.writeFileSync(walletStoreFilename, JSON.stringify({
         DevWalletOne: StakingAddressAmount,
-        DevWalletTwo: OldAddressAmount
+        DevWalletTwo: OldAddressAmount,
+        DevWalletThree: CharityAddressAmount
       }))
 
       console.log(`ReddCoin Wallet Data written to store ${walletStoreFilename}`)
@@ -130,6 +137,13 @@ const updateStore = () => {
         RDD: `(${HRNumbers.toHumanString(walletData.DevWalletTwo)} RDD)`,
         RDDTotal: walletData.DevWalletTwo,
         Source: DevWalletTwoAddressCheckUrl
+      },
+      DevWalletThree: {
+        Address: DevWalletThreeAddress,
+        USD: new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(walletData.DevWalletThree * priceData.priceUsd),
+        RDD: `(${HRNumbers.toHumanString(walletData.DevWalletThree)} RDD)`,
+        RDDTotal: walletData.DevWalletThree,
+        Source: DevWalletThreeAddressCheckUrl
       },
       LastUpdated: moment().toISOString()
     }), () => {
