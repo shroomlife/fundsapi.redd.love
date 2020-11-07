@@ -1,3 +1,5 @@
 .env
 /node_modules
-/*.lock
+
+/yarn.lock
+/package-lock.json
