@@ -8,10 +8,13 @@ const HRNumbers = require('human-readable-numbers')
 const corsMiddleware = require('restify-cors-middleware')
 const moment = require('moment')
 
+const monday = require('./helpers/monday')
+
 // new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' }).format(number)
 const currentStoreFilename = path.resolve(__dirname, 'store', 'current.json')
 const priceStoreFilename = path.resolve(__dirname, 'store', 'price.json')
 const walletStoreFilename = path.resolve(__dirname, 'store', 'wallets.json')
+const paybackStoreFilename = path.resolve(__dirname, 'store', 'payback.json')
 
 const cors = corsMiddleware({
   origins: ['https://redd.love', 'https://staging.redd.love'],
@@ -105,6 +108,16 @@ const calculateTotal = (spend, receive) => {
   return Math.abs(receive) - Math.abs(spend)
 }
 
+const updatePaybackData = () => {
+  return new Promise((resolve, reject) => {
+    monday.getPaybackData().then(PaybackData => {
+      fs.writeFileSync(paybackStoreFilename, JSON.stringify(PaybackData))
+      console.log(`Monday.com Payback Data written to store ${paybackStoreFilename}`)
+      resolve()
+    }).catch(reject)
+  })
+}
+
 const updateStore = () => {
   Promise.all([
     new Promise(resolve => {
@@ -118,10 +131,12 @@ const updateStore = () => {
         console.log('Error @ cacheCustomWallets', error)
         resolve()
       })
-    })
+    }),
+    updatePaybackData()
   ]).then(() => {
     const priceData = JSON.parse(fs.readFileSync(priceStoreFilename))
     const walletData = JSON.parse(fs.readFileSync(walletStoreFilename))
+    const paybackData = JSON.parse(fs.readFileSync(paybackStoreFilename))
 
     fs.writeFile(currentStoreFilename, JSON.stringify({
       DevWalletOne: {
@@ -145,6 +160,7 @@ const updateStore = () => {
         RDDTotal: walletData.DevWalletThree,
         Source: DevWalletThreeAddressCheckUrl
       },
+      PaybackData: paybackData,
       LastUpdated: moment().toISOString()
     }), () => {
       console.log(`Redd Funding Data written to store ${currentStoreFilename}`)
