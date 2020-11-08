@@ -6,6 +6,7 @@ const fs = require('fs')
 const path = require('path')
 const HRNumbers = require('human-readable-numbers')
 const corsMiddleware = require('restify-cors-middleware')
+const currencyFormatter = require('currency-formatter')
 const moment = require('moment')
 
 const monday = require('./helpers/monday')
@@ -111,7 +112,21 @@ const calculateTotal = (spend, receive) => {
 const updatePaybackData = () => {
   return new Promise((resolve, reject) => {
     monday.getPaybackData().then(PaybackData => {
-      fs.writeFileSync(paybackStoreFilename, JSON.stringify(PaybackData))
+      const computedPaybackData = PaybackData.map(DonorData => {
+        const defaultCurrencyConfig = {
+          symbol: 'RDD',
+          decimal: '.',
+          thousand: ',',
+          format: '%v %s'
+        }
+
+        DonorData.DebtText = currencyFormatter.format(DonorData.Debt, defaultCurrencyConfig)
+        DonorData.PaidText = currencyFormatter.format(DonorData.Paid, defaultCurrencyConfig)
+
+        return DonorData
+      })
+
+      fs.writeFileSync(paybackStoreFilename, JSON.stringify(computedPaybackData))
       console.log(`Monday.com Payback Data written to store ${paybackStoreFilename}`)
       resolve()
     }).catch(reject)
