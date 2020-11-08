@@ -11,7 +11,7 @@ const getPaybackData = () => {
         'Content-Type': 'application/json',
         Accept: 'application/json'
       },
-      data: JSON.stringify({ query: '{ boards(ids: 792904576) { groups(ids: topics) { items { column_values { id text } } } } }' })
+      data: JSON.stringify({ query: '{ boards(ids: 792904576) { groups(ids: topics) { items { name column_values { id text } } } } }' })
     }).then(response => {
       const result = response.data.data.boards[0].groups[0].items
       const computedResult = result.map(Row => {
@@ -26,6 +26,7 @@ const getPaybackData = () => {
           ID: Row.column_values.find(Field => {
             return Field.id === 'text'
           }).text,
+          Name: Row.name,
           Debt: Debt,
           Paid: Paid,
           IsFullyPaid: Paid === Debt,
