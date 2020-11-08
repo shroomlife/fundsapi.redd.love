@@ -123,6 +123,9 @@ const updatePaybackData = () => {
         DonorData.DebtText = currencyFormatter.format(DonorData.Debt, defaultCurrencyConfig)
         DonorData.PaidText = currencyFormatter.format(DonorData.Paid, defaultCurrencyConfig)
 
+        DonorData.Rest = DonorData.Debt - DonorData.Paid
+        DonorData.RestText = currencyFormatter.format(DonorData.Rest, defaultCurrencyConfig)
+
         return DonorData
       })
 
