@@ -117,6 +117,7 @@ const updatePaybackData = () => {
           symbol: 'RDD',
           decimal: '.',
           thousand: ',',
+          precision: 2,
           format: '%v %s'
         }
 
