@@ -67,10 +67,12 @@ const getCurrentReccCoinToUSDPrice = () => {
 const DevWalletOneAddress = 'Rmhzj2GptZxkKBMqbUL6VjFcX8npDneAXR'
 const DevWalletTwoAddress = 'Ru6sDVdn4MhxXJauQ2GAJP4ozpPpmcDKdc'
 const DevWalletThreeAddress = 'Recrcq8moZjbEHVoJx6JiQ2mfZkQnktvnf'
+const ExchangeFunding2021Address = 'RqQ4qnJCAcqxPqsvMtyJx73eyVyWtpjN73'
 
 const DevWalletOneAddressCheckUrl = `http://www.tokenview.com:8088/address/rdd/${DevWalletOneAddress}/1/1`
 const DevWalletTwoAddressCheckUrl = `https://live.reddcoin.com/api/addr/${DevWalletTwoAddress}/?noTxList=1`
 const DevWalletThreeAddressCheckUrl = `https://live.reddcoin.com/api/addr/${DevWalletThreeAddress}/?noTxList=1`
+const ExchangeFunding2021AddressCheckUrl = `https://live.reddcoin.com/api/addr/${ExchangeFunding2021Address}/?noTxList=1`
 
 const cacheCustomWallets = () => {
   // DevWalletOne -> Rmhzj2GptZxkKBMqbUL6VjFcX8npDneAXR (PoSV v2 Dev Generation Address)
@@ -86,17 +88,27 @@ const cacheCustomWallets = () => {
       }),
       axios({
         url: DevWalletThreeAddressCheckUrl
+      }),
+      axios({
+        url: ExchangeFunding2021AddressCheckUrl
       })
-    ]).then(([StakingAddress, OldDevAddress, CharityAddress]) => {
+    ]).then(([StakingAddress, OldDevAddress, CharityAddress, ExchangeFundAddress]) => {
       const StakingAddressData = StakingAddress.data.data.shift()
       const StakingAddressAmount = calculateTotal(StakingAddressData.spend, StakingAddressData.receive)
       const OldAddressAmount = OldDevAddress.data.balance
       const CharityAddressAmount = CharityAddress.data.balance
+      const ExchangeFundAmount = ExchangeFundAddress.data.balance
 
       fs.writeFileSync(walletStoreFilename, JSON.stringify({
         DevWalletOne: StakingAddressAmount,
         DevWalletTwo: OldAddressAmount,
-        DevWalletThree: CharityAddressAmount
+        DevWalletThree: CharityAddressAmount,
+        ExchangeFundAmount,
+        ExchangeFundAmountFormatted: currencyFormatter.format(ExchangeFundAmount, {
+          symbol: 'RDD',
+          format: '%v %s',
+          precision: 0
+        })
       }))
 
       console.log(`ReddCoin Wallet Data written to store ${walletStoreFilename}`)
@@ -180,6 +192,8 @@ const updateStore = () => {
         Source: DevWalletThreeAddressCheckUrl
       },
       PaybackData: paybackData,
+      ExchangeFundAmount: walletData.ExchangeFundAmount,
+      ExchangeFundAmountFormatted: walletData.ExchangeFundAmountFormatted,
       LastUpdated: moment().toISOString()
     }), () => {
       console.log(`Redd Funding Data written to store ${currentStoreFilename}`)
