@@ -145,10 +145,7 @@ const updatePaybackData = () => {
       fs.writeFileSync(paybackStoreFilename, JSON.stringify(computedPaybackData))
       console.log(`Monday.com Payback Data written to store ${paybackStoreFilename}`)
       resolve()
-    }).catch(error => {
-      console.error(error)
-      resolve()
-    })
+    }).catch(reject)
   })
 }
 
@@ -166,7 +163,12 @@ const updateStore = () => {
         resolve()
       })
     }),
-    updatePaybackData()
+    new Promise(resolve => {
+      updatePaybackData().then(resolve).catch(error => {
+        console.log('Error @ updatePaybackData', error)
+        resolve()
+      })
+    })
   ]).then(() => {
     const priceData = JSON.parse(fs.readFileSync(priceStoreFilename))
     const walletData = JSON.parse(fs.readFileSync(walletStoreFilename))
