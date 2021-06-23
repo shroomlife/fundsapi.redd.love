@@ -40,7 +40,7 @@ server.get('/get', (req, res) => {
   res.json(200, JSON.parse(fs.readFileSync(currentStoreFilename).toString()))
 })
 
-const getCurrentReccCoinToUSDPrice = () => {
+const getCurrentReddCoinToUSDPrice = () => {
   return new Promise((resolve, reject) => {
     axios({
       url: 'https://api.coincap.io/v2/assets/redd'
@@ -145,15 +145,18 @@ const updatePaybackData = () => {
       fs.writeFileSync(paybackStoreFilename, JSON.stringify(computedPaybackData))
       console.log(`Monday.com Payback Data written to store ${paybackStoreFilename}`)
       resolve()
-    }).catch(reject)
+    }).catch(error => {
+      console.error(error)
+      resolve()
+    })
   })
 }
 
 const updateStore = () => {
   Promise.all([
     new Promise(resolve => {
-      getCurrentReccCoinToUSDPrice().then(resolve).catch(error => {
-        console.log('Error @ getCurrentReccCoinToUSDPrice', error)
+      getCurrentReddCoinToUSDPrice().then(resolve).catch(error => {
+        console.log('Error @ getCurrentReddCoinToUSDPrice', error)
         resolve()
       })
     }),
@@ -203,7 +206,7 @@ const updateStore = () => {
 
 server.listen(80, () => {
   console.log('%s listening at %s', server.name, server.url)
-  updateStore()
+  // updateStore()
   cron.schedule('*/5 * * * *', () => {
     console.log(Date())
     updateStore()

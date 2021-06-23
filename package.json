@@ -1,6 +1,6 @@
 {
   "name": "fundsapi.redd.love",
-  "version": "1.4.0",
+  "version": "1.4.2",
   "private": false,
   "description": "A simple wrapper for the receiving of the current funding values for Redd.",
   "repository": "git@github.com:shroomlife/fundsapi.redd.love.git",
@@ -16,11 +16,11 @@
   },
   "dependencies": {
     "axios": "0.21.1",
-    "currency-formatter": "1.5.6",
-    "dotenv": "8.2.0",
+    "currency-formatter": "1.5.8",
+    "dotenv": "10.0.0",
     "human-readable-numbers": "0.9.5",
     "moment": "2.29.1",
-    "node-cron": "2.0.3",
+    "node-cron": "3.0.0",
     "restify": "8.5.1",
     "restify-cors-middleware": "1.1.1"
   },
