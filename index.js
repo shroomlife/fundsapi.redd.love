@@ -122,31 +122,32 @@ const calculateTotal = (spend, receive) => {
 }
 
 const updatePaybackData = () => {
-  return new Promise((resolve, reject) => {
-    monday.getPaybackData().then(PaybackData => {
-      const computedPaybackData = PaybackData.map(DonorData => {
-        const defaultCurrencyConfig = {
-          symbol: 'RDD',
-          decimal: '.',
-          thousand: ',',
-          precision: 2,
-          format: '%v %s'
-        }
+  return true
+  // return new Promise((resolve, reject) => {
+  //   monday.getPaybackData().then(PaybackData => {
+  //     const computedPaybackData = PaybackData.map(DonorData => {
+  //       const defaultCurrencyConfig = {
+  //         symbol: 'RDD',
+  //         decimal: '.',
+  //         thousand: ',',
+  //         precision: 2,
+  //         format: '%v %s'
+  //       }
 
-        DonorData.DebtText = currencyFormatter.format(DonorData.Debt, defaultCurrencyConfig)
-        DonorData.PaidText = currencyFormatter.format(DonorData.Paid, defaultCurrencyConfig)
+  //       DonorData.DebtText = currencyFormatter.format(DonorData.Debt, defaultCurrencyConfig)
+  //       DonorData.PaidText = currencyFormatter.format(DonorData.Paid, defaultCurrencyConfig)
 
-        DonorData.Rest = DonorData.Debt - DonorData.Paid
-        DonorData.RestText = currencyFormatter.format(DonorData.Rest, defaultCurrencyConfig)
+  //       DonorData.Rest = DonorData.Debt - DonorData.Paid
+  //       DonorData.RestText = currencyFormatter.format(DonorData.Rest, defaultCurrencyConfig)
 
-        return DonorData
-      })
+  //       return DonorData
+  //     })
 
-      fs.writeFileSync(paybackStoreFilename, JSON.stringify(computedPaybackData))
-      console.log(`Monday.com Payback Data written to store ${paybackStoreFilename}`)
-      resolve()
-    }).catch(reject)
-  })
+  //     fs.writeFileSync(paybackStoreFilename, JSON.stringify(computedPaybackData))
+  //     console.log(`Monday.com Payback Data written to store ${paybackStoreFilename}`)
+  //     resolve()
+  //   }).catch(reject)
+  // })
 }
 
 const updateStore = () => {
@@ -162,17 +163,17 @@ const updateStore = () => {
         console.log('Error @ cacheCustomWallets', error)
         resolve()
       })
-    }),
-    new Promise(resolve => {
-      updatePaybackData().then(resolve).catch(error => {
-        console.log('Error @ updatePaybackData', error)
-        resolve()
-      })
     })
+    // new Promise(resolve => {
+    //   updatePaybackData().then(resolve).catch(error => {
+    //     console.log('Error @ updatePaybackData', error)
+    //     resolve()
+    //   })
+    // })
   ]).then(() => {
     const priceData = JSON.parse(fs.readFileSync(priceStoreFilename))
     const walletData = JSON.parse(fs.readFileSync(walletStoreFilename))
-    const paybackData = JSON.parse(fs.readFileSync(paybackStoreFilename))
+    // const paybackData = JSON.parse(fs.readFileSync(paybackStoreFilename))
 
     fs.writeFile(currentStoreFilename, JSON.stringify({
       DevWalletOne: {
@@ -196,7 +197,7 @@ const updateStore = () => {
         RDDTotal: walletData.DevWalletThree,
         Source: DevWalletThreeAddressCheckUrl
       },
-      PaybackData: paybackData,
+      // PaybackData: paybackData,
       ExchangeFundAmount: walletData.ExchangeFundAmount,
       ExchangeFundAmountFormatted: walletData.ExchangeFundAmountFormatted,
       LastUpdated: moment().toISOString()
@@ -208,7 +209,7 @@ const updateStore = () => {
 
 server.listen(80, () => {
   console.log('%s listening at %s', server.name, server.url)
-  // updateStore()
+  updateStore()
   cron.schedule('*/5 * * * *', () => {
     console.log(Date())
     updateStore()
